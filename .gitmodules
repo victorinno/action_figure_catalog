@@ -1,0 +1,4 @@
+[submodule "tower_web_dummy_service"]
+	path = tower_web_dummy_service
+	url = https://github.com/victorinno/tower_web_dummy_service.git
+	branch = master
