@@ -21,13 +21,13 @@
 
 
 
-docker network create jenkins
-docker volume create jenkins-docker-certs
-docker volume create jenkins-data
-docker container run --name jenkins-docker --rm --detach --privileged --network jenkins --network-alias docker --env DOCKER_TLS_CERTDIR=/certs --volume jenkins-docker-certs:/certs/client --volume jenkins-data:/var/jenkins_home --publish 2376:2376 docker:dind
-docker container run --name jenkins-blueocean --rm --detach --network jenkins --env DOCKER_HOST=tcp://docker:2376 --env DOCKER_CERT_PATH=/certs/client --env DOCKER_TLS_VERIFY=1 --publish 8080:8080 --publish 50000:50000 --volume jenkins-data:/var/jenkins_home --volume jenkins-docker-certs:/certs/client:ro jenkinsci/blueocean
+sudo docker network create jenkins
+sudo docker volume create jenkins-docker-certs
+sudo docker volume create jenkins-data
+sudo docker container run --name jenkins-docker --rm --detach --privileged --network jenkins --network-alias docker --env DOCKER_TLS_CERTDIR=/certs --volume jenkins-docker-certs:/certs/client --volume jenkins-data:/var/jenkins_home --publish 2376:2376 docker:dind
+sudo docker container run --name jenkins-blueocean --rm --detach --network jenkins --env DOCKER_HOST=tcp://docker:2376 --env DOCKER_CERT_PATH=/certs/client --env DOCKER_TLS_VERIFY=1 --publish 8080:8080 --publish 50000:50000 --volume jenkins-data:/var/jenkins_home --volume jenkins-docker-certs:/certs/client:ro jenkinsci/blueocean
 
-docker run -d --name express-gateway-data-store -p 6379:6379 redis:alpine
-docker run -d --name express-gateway --link express-gateway-data-store:express-gateway-data-store -v /my/own/datadir:/var/lib/eg -p 9080:9080 -p 9876:9876 -p 10443:0443 express-gateway
-docker pull ggcaponetto/express-gateway-gui
-docker run -e EXPRESS_GATEWAY_ADMIN_URL=http://host.docker.internal:9876 -e PROXY_PORT=9877 -d -p 5000:5000 -p 9877:9877 -it ggcaponetto/express-gateway-gui
+sudo docker run -d --name express-gateway-data-store -p 6379:6379 redis:alpine
+sudo docker run -d --name express-gateway --link express-gateway-data-store:express-gateway-data-store -v /my/own/datadir:/var/lib/eg -p 9080:9080 -p 9876:9876 -p 10443:0443 express-gateway
+sudo docker pull ggcaponetto/express-gateway-gui
+sudo docker run -e EXPRESS_GATEWAY_ADMIN_URL=http://host.docker.internal:9876 -e PROXY_PORT=9877 -d -p 5000:5000 -p 9877:9877 -it ggcaponetto/express-gateway-gui
