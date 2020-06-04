@@ -1,0 +1,57 @@
+version: '3.3'
+services:
+    docker:
+        container_name: jenkins-docker
+        privileged: true
+        network_mode: jenkins
+        environment:
+            - DOCKER_TLS_CERTDIR=/certs
+        volumes:
+            - 'jenkins-docker-certs:/certs/client'
+            - 'jenkins-data:/var/jenkins_home'
+        ports:
+            - '2376:2376'
+        image: 'docker:dind'
+
+    blueocean:
+        container_name: jenkins-blueocean
+        network_mode: jenkins
+        environment:
+            - 'DOCKER_HOST=tcp://docker:2376'
+            - DOCKER_CERT_PATH=/certs/client
+            - DOCKER_TLS_VERIFY=1
+        ports:
+            - '8080:8080'
+            - '50000:50000'
+        volumes:
+            - 'jenkins-data:/var/jenkins_home'
+            - 'jenkins-docker-certs:/certs/client:ro'
+        image: jenkinsci/blueocean
+
+    express-gateway-data-store:
+        container_name: express-gateway-data-store
+        ports:
+            - '6379:6379'
+        image: 'redis:alpine'
+    
+    express-gateway:
+        container_name: express-gateway
+        links:
+            - 'express-gateway-data-store:express-gateway-data-store'
+        volumes:
+            - '/my/own/datadir:/var/lib/eg'
+        ports:
+            - '9080:9080'
+            - '9876:9876'
+            - '10443:0443'
+        image: express-gateway
+
+    express-gateway-gui:
+        container_name: express-gateway-gui
+        environment:
+            - 'EXPRESS_GATEWAY_ADMIN_URL=http://host.docker.internal:9876'
+            - PROXY_PORT=9877
+        ports:
+            - '5000:5000'
+            - '9877:9877'
+        image: ggcaponetto/express-gateway-gui
